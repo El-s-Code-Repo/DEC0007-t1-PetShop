@@ -1,2 +1,8 @@
 # template-prog-web
-made to be forked
+
+This is a template node app
+
+Installed packages
+```
+- Express
+```

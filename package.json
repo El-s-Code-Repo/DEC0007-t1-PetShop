@@ -1,0 +1,27 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "This is a template node app",
+  "homepage": "https://github.com/Messier1071/template-prog-web#readme",
+  "bugs": {
+    "url": "https://github.com/Messier1071/template-prog-web/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Messier1071/template-prog-web.git"
+  },
+  "license": "ISC",
+  "author": "Mess",
+  "type": "commonjs",
+  "main": "./app/app.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node ./app/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
