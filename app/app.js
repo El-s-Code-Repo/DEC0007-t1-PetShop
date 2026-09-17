@@ -1,7 +1,7 @@
 console.log("Hello World")
 import express from "express"
 
-var app = express()
+let app = express()
 
 app.use(express.static("./static"))
 
