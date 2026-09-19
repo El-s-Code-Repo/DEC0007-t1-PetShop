@@ -1,17 +1,17 @@
 {
-  "name": "webapp",
+  "name": "pet_shop",
   "version": "1.0.0",
-  "description": "This is a template node app",
-  "homepage": "https://github.com/Messier1071/template-prog-web#readme",
+  "description": "site to set appointments to have your pet taken care of",
+  "homepage": "https://github.com/El-s-Code-Repo/DEC0007-t1-PetShop#readme",
   "bugs": {
-    "url": "https://github.com/Messier1071/template-prog-web/issues"
+    "url": "https://github.com/El-s-Code-Repo/DEC0007-t1-PetShop/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Messier1071/template-prog-web.git"
+    "url": "git+https://github.com/El-s-Code-Repo/DEC0007-t1-PetShop.git"
   },
   "license": "ISC",
-  "author": "Mess",
+  "author": "El",
   "type": "commonjs",
   "main": "./app/app.js",
   "directories": {

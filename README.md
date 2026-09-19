@@ -8,22 +8,30 @@ appointment capacity is represented by a number (int 0-inf)
 
 <sub> Here zero shows there are no free time slots for that hour, Nonzero positive values display how many appointments are available at that hour</sub>
 
-<h3> Client </h3> <br>
-can: <br>
- - check available appointment times <br>
- - schedule an appointment at an available time by providing their name and CPF
 
-<h3> Admin </h3> <br>
-can: <br>
-see appointments through <b>/listPetAgenda</b> listing (Date, time, clientName, CPF) <br>
+<h2> users, systems and their tasks:</h2>
+<h3> Client </h3>
+can:
+<ul>
+<li>check available appointment times </li> 
+<li>schedule an appointment at an available time by providing their name and CPF</li> 
+</ul>
 
-![img.png](docs/AdminTableExample.png) <br>
+<h3> Admin </h3>
+can:
+<ul>
+<li>see appointments through <b>/listaPetAgenda</b> listing (Date, time, clientName, CPF)</li> 
+
+![img.png](docs/AdminTableExample.png)
 <sub>example  table</sub>
+<li> Edit available time slots through <b>/ajustaPetAgenda</b> setting how many slots are available for each day/hour</li>
 
- - Edit available time slots through <b>/ajustaPetAgenda</b> setting how many slots are available for each day/hour
+</ul>
+
 
 <h3> Database</h3>
 persistent storage for Client, appointment and available time slot data objects.
+
 
 <h3>Server & API</h3>
 must be able to:
