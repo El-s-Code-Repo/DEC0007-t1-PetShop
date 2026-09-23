@@ -26,6 +26,7 @@
     "express": "^5.2.1",
     "express-handlebars": "^9.0.1",
     "handlebars": "^4.7.9",
+    "mongodb": "^7.6.0",
     "typescript": "^7.0.2"
   },
   "devDependencies": {
