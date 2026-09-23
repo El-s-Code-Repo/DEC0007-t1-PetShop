@@ -12,17 +12,22 @@
   },
   "license": "ISC",
   "author": "El",
-  "type": "commonjs",
-  "main": "./app/app.js",
+  "type": "module",
+  "main": "app/app.mjs",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "start": "node ./app/app.js",
+    "start": "node app/app.mjs",
+    "dev": "nodemon app/app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "express-handlebars": "^9.0.1",
     "handlebars": "^4.7.9"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
