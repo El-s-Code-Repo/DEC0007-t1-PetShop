@@ -1,8 +1,16 @@
 import {Client,Appointment} from "./models.mjs";
 import {Connection} from "./connector.mjs";
+
 /**
  * @param {Client}client*/
 export async function addClientIfNotExists(client){
+    let testClient = await getClientByCPF(client.cpf);
+
+    if(testClient !=null){
+        console.log("did not inset, client already exists")
+        return;
+    }
+
     try {
         await Connection.clients.insertOne(client.toJSON());
     }catch(err) {
@@ -39,6 +47,16 @@ export async function addAppointment(appointment){
 /**
  * @param {Number}cpf
  */
-export function getClientByCPF(cpf){
+export async function getClientByCPF(cpf) {
+    let clientData = await Connection.clients.findOne({cpf: cpf});
+    if (clientData != null) {
+        return new Client(clientData.name, clientData["cpf"]);
 
+    } else return null;
 }
+
+//async function consulta() {
+//   let a = await alunos.findOne({ idade: 32 });
+//
+//   console.log(a);
+// }
