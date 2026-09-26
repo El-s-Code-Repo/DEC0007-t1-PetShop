@@ -1,7 +1,10 @@
 # PetShop
 Task* = (Optional / low priority)
-## Project management
-set project structure
+## Project structure
+- Model, handles object creation and structure <br>
+- View, Handles the front end and webpage rendering
+- Controller, handles the internals and how the view interacts with the db
+
 
 ## HTML
 - [ ] Home page
