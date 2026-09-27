@@ -1,5 +1,6 @@
-import {DAYS_OF_WEEK, SERVICE_HOURS} from "../model/models.mjs";
-import {getTimeTable, updateTimeTable, getAllAppointments} from "../model/handlers.mjs";
+import {DAYS_OF_WEEK, SERVICE_HOURS} from "../model/modelTimeTable.mjs";
+import {getTimeTable, updateTimeTable} from "../model/handlerTimeTable.mjs";
+import {getAllAppointments} from "../model/handlerAppointment.mjs";
 
 /**
  * Builds the weekly schedule rows for the Handlebars template

@@ -1,4 +1,4 @@
-import {Client, Appointment, TimeTable, DAYS_OF_WEEK, SERVICE_HOURS} from "./models.mjs";
+import {TimeTable, DAYS_OF_WEEK, SERVICE_HOURS} from "./modelTimeTable.mjs";
 import {Connection} from "./connector.mjs";
 
 const JS_DAY_TO_KEY = {
@@ -9,54 +9,6 @@ const JS_DAY_TO_KEY = {
     5: "friday",
     6: "saturday"
 };
-
-/**
- * @param {Client} client
- */
-export async function addClientIfNotExists(client) {
-    await Connection.open();
-    let testClient = await getClientByCPF(client.cpf);
-
-    if (testClient != null) {
-        console.log("did not insert, client already exists");
-        return testClient;
-    }
-
-    try {
-        await Connection.clients.insertOne(client.toJSON());
-        console.log("inserted client");
-    } catch (err) {
-        console.log(err);
-    }
-    return client;
-}
-
-/**
- * @param {Appointment} appointment
- */
-export async function addAppointment(appointment) {
-    await Connection.open();
-    try {
-        await Connection.appointments.insertOne(appointment.toJSON());
-        console.log("inserted appointment");
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-/**
- * @param {String|Number} cpf
- */
-export async function getClientByCPF(cpf) {
-    await Connection.open();
-    const normalizedCpf = String(cpf).trim();
-    let clientData = await Connection.clients.findOne({cpf: normalizedCpf});
-    if (clientData != null) {
-        return new Client(clientData.name, clientData["cpf"], clientData._id);
-    } else {
-        return null;
-    }
-}
 
 /**
  * Returns the weekly schedule capacity configuration
@@ -124,68 +76,12 @@ export async function getSlotAvailableCapacity(dateMs) {
 }
 
 /**
- * Books an appointment following all 5 steps from PDF Section 2
- * @param {String} name
- * @param {String|Number} cpf
- * @param {Number} dateMs
- */
-export async function bookAppointment(name, cpf, dateMs) {
-    await Connection.open();
-    const timestamp = Number(dateMs);
-
-    if (isNaN(timestamp) || timestamp <= Date.now()) {
-        return {success: false, message: "Não é possível agendar em um horário que já passou."};
-    }
-
-    const available = await getSlotAvailableCapacity(timestamp);
-    if (available <= 0) {
-        return {success: false, message: "Este horário não possui mais vagas disponíveis."};
-    }
-
-    const client = await Client.get(name, cpf);
-    await client.save();
-
-    const appointment = new Appointment(timestamp, client);
-    await addAppointment(appointment);
-
-    const remainingCapacity = await getSlotAvailableCapacity(timestamp);
-    return {
-        success: true,
-        message: "Agendamento realizado com sucesso!",
-        remainingCapacity
-    };
-}
-
-/**
- * Lists all appointments formatted for the admin schedule page
- */
-export async function getAllAppointments() {
-    await Connection.open();
-    const rawAppointments = await Connection.appointments.find({}).sort({dateMs: 1}).toArray();
-    const result = [];
-
-    for (const appt of rawAppointments) {
-        const client = await getClientByCPF(appt.clientCPF);
-        const {dateStr, hourStr} = parseSlotFromDateMs(appt.dateMs);
-        result.push({
-            dateMs: appt.dateMs,
-            date: dateStr,
-            hour: hourStr,
-            clientName: client ? client.name : "Cliente não encontrado",
-            clientCPF: appt.clientCPF
-        });
-    }
-
-    return result;
-}
-
-/**
  * Computes the Monday date of the active scheduling week.
  * If today is Sunday (0) or Saturday after 17:00, it targets the upcoming week.
  */
 function getTargetWeekMonday() {
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    const dayOfWeek = now.getDay();
     const monday = new Date(now);
 
     if (dayOfWeek === 0) {
@@ -209,7 +105,6 @@ export async function getWeeklyCalendarData() {
     const monday = getTargetWeekMonday();
     const nowMs = Date.now();
 
-    // Calculate date info for each day column (Monday to Saturday)
     const weekDays = DAYS_OF_WEEK.map((dayObj, index) => {
         const d = new Date(monday);
         d.setDate(monday.getDate() + index);
@@ -227,7 +122,6 @@ export async function getWeeklyCalendarData() {
         };
     });
 
-    // Fetch all appointments within this week's range in a single query
     const weekStartMs = monday.getTime();
     const weekEndMs = weekStartMs + 7 * 24 * 60 * 60 * 1000;
     const weekAppointments = await Connection.appointments
@@ -251,8 +145,6 @@ export async function getWeeklyCalendarData() {
             const booked = bookedCountByMs[dateMs] || 0;
             const remaining = Math.max(0, configured - booked);
             const isPast = dateMs <= nowMs;
-
-            // PDF Section 2: Omit slots with capacity == 0 or in the past
             const isAvailable = !isPast && remaining > 0;
 
             if (isAvailable) {

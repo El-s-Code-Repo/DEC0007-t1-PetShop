@@ -1,4 +1,5 @@
-import {getWeeklyCalendarData, bookAppointment} from "../model/handlers.mjs";
+import {getWeeklyCalendarData} from "../model/handlerTimeTable.mjs";
+import {bookAppointment} from "../model/handlerAppointment.mjs";
 
 /**
  * GET /
