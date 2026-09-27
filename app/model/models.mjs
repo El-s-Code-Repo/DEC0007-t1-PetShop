@@ -1,7 +1,15 @@
 // @ts-check
 import {Connection} from "./connector.mjs";
 
-export const DAYS_OF_WEEK = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+export const DAYS_OF_WEEK = [
+    {key: "monday", label: "Segunda"},
+    {key: "tuesday", label: "Terça"},
+    {key: "wednesday", label: "Quarta"},
+    {key: "thursday", label: "Quinta"},
+    {key: "friday", label: "Sexta"},
+    {key: "saturday", label: "Sábado"}
+];
+
 export const SERVICE_HOURS = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
 
 export class Client {
@@ -106,12 +114,12 @@ export class TimeTable {
 
     static getDefaultSchedule() {
         return {
-            "Segunda": {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 1, "15:00": 1, "16:00": 1, "17:00": 1},
-            "Terça":   {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
-            "Quarta":  {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 1, "15:00": 1, "16:00": 1, "17:00": 1},
-            "Quinta":  {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
-            "Sexta":   {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
-            "Sábado":  {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 0, "15:00": 0, "16:00": 0, "17:00": 0}
+            monday:    {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 1, "15:00": 1, "16:00": 1, "17:00": 1},
+            tuesday:   {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
+            wednesday: {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 1, "15:00": 1, "16:00": 1, "17:00": 1},
+            thursday:  {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
+            friday:    {"08:00": 2, "09:00": 2, "10:00": 2, "11:00": 2, "14:00": 2, "15:00": 2, "16:00": 2, "17:00": 2},
+            saturday:  {"08:00": 1, "09:00": 1, "10:00": 1, "11:00": 1, "14:00": 0, "15:00": 0, "16:00": 0, "17:00": 0}
         };
     }
 
@@ -125,9 +133,13 @@ export class TimeTable {
     static async get() {
         await Connection.open();
         let doc = await Connection.timetable.findOne({configId: "weekly_default"});
-        if (!doc) {
+        if (!doc || !doc.schedule || !doc.schedule.monday) {
             const defaultTable = new TimeTable();
-            await Connection.timetable.insertOne(defaultTable.toJSON());
+            await Connection.timetable.updateOne(
+                {configId: "weekly_default"},
+                {$set: {schedule: defaultTable.schedule}},
+                {upsert: true}
+            );
             return defaultTable;
         }
         return new TimeTable(doc.schedule);

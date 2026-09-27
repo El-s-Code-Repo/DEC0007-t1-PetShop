@@ -1,0 +1,62 @@
+<section class="card">
+    <h1>{{pageTitle}}</h1>
+    <p class="subtitle">
+        Defina a capacidade de atendimentos simultâneos para cada dia e horário.
+        O valor <strong>0</strong> indica que não há atendimento naquele horário.
+    </p>
+
+    {{#if successMessage}}
+        <div class="alert alert-success">{{successMessage}}</div>
+    {{/if}}
+
+    {{#if errorMessage}}
+        <div class="alert alert-error">{{errorMessage}}</div>
+    {{/if}}
+
+    <form action="/ajustaPetAgenda" method="POST">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        {{#each days}}
+                            <th>{{this.label}}</th>
+                        {{/each}}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each rows}}
+                        <tr>
+                            <td><strong>{{this.hour}}</strong></td>
+                            {{#each this.cells}}
+                                <td>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        class="slot-input"
+                                        name="slot_{{this.dayKey}}_{{this.hour}}"
+                                        value="{{this.capacity}}"
+                                        required
+                                    >
+                                </td>
+                            {{/each}}
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+            <button type="submit" class="btn">Salvar Configuração</button>
+        </div>
+    </form>
+</section>
+
+{{#if successMessage}}
+<script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, "", window.location.pathname);
+    }
+</script>
+{{/if}}

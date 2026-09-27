@@ -1,6 +1,7 @@
 import express from "express";
 import {engine} from "express-handlebars";
 import {Connection} from "./model/connector.mjs";
+import {renderScheduleConfig, handleScheduleConfigUpdate} from "./controller/adminController.mjs";
 
 let app = express();
 
@@ -25,6 +26,9 @@ app.get("/", async function (req, res) {
         pageTitle: "Agendamento de Banho e Tosa"
     });
 });
+
+app.get("/ajustaPetAgenda", renderScheduleConfig);
+app.post("/ajustaPetAgenda", handleScheduleConfigUpdate);
 
 async function startServer() {
     try {

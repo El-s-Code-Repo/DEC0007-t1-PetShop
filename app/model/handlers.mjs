@@ -1,13 +1,13 @@
 import {Client, Appointment, TimeTable, DAYS_OF_WEEK, SERVICE_HOURS} from "./models.mjs";
 import {Connection} from "./connector.mjs";
 
-const JS_DAY_TO_NAME = {
-    1: "Segunda",
-    2: "Terça",
-    3: "Quarta",
-    4: "Quinta",
-    5: "Sexta",
-    6: "Sábado"
+const JS_DAY_TO_KEY = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday",
+    6: "saturday"
 };
 
 /**
@@ -59,7 +59,7 @@ export async function getClientByCPF(cpf) {
 }
 
 /**
- * Retorna a tabela de configuração semanal de horários
+ * Returns the weekly schedule capacity configuration
  */
 export async function getTimeTable() {
     const table = await TimeTable.get();
@@ -67,17 +67,18 @@ export async function getTimeTable() {
 }
 
 /**
- * Atualiza a capacidade configurada para cada dia e horário (/ajustaPetAgenda)
+ * Updates the configured capacity for each day and hour
  * @param {Object.<string, Object.<string, number>>} newSchedule
  */
 export async function updateTimeTable(newSchedule) {
     const current = await TimeTable.get();
-    for (const day of DAYS_OF_WEEK) {
-        if (!current.schedule[day]) current.schedule[day] = {};
+    for (const dayObj of DAYS_OF_WEEK) {
+        const dayKey = dayObj.key;
+        if (!current.schedule[dayKey]) current.schedule[dayKey] = {};
         for (const hour of SERVICE_HOURS) {
-            if (newSchedule?.[day]?.[hour] !== undefined) {
-                const parsed = parseInt(String(newSchedule[day][hour]), 10);
-                current.schedule[day][hour] = (!isNaN(parsed) && parsed >= 0) ? parsed : 0;
+            if (newSchedule?.[dayKey]?.[hour] !== undefined) {
+                const parsed = parseInt(String(newSchedule[dayKey][hour]), 10);
+                current.schedule[dayKey][hour] = (!isNaN(parsed) && parsed >= 0) ? parsed : 0;
             }
         }
     }
@@ -86,32 +87,34 @@ export async function updateTimeTable(newSchedule) {
 }
 
 /**
- * Converte um timestamp (dateMs) no nome do dia da semana e string de horário ("HH:00")
+ * Converts a timestamp (dateMs) into weekday key, label, and formatted date/time strings
  * @param {Number} dateMs
  */
 export function parseSlotFromDateMs(dateMs) {
     const d = new Date(Number(dateMs));
-    const dayName = JS_DAY_TO_NAME[d.getDay()] || null;
+    const dayKey = JS_DAY_TO_KEY[d.getDay()] || null;
+    const dayObj = DAYS_OF_WEEK.find((item) => item.key === dayKey);
+    const dayLabel = dayObj ? dayObj.label : null;
     const hourStr = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
     const dateStr = String(d.getDate()).padStart(2, "0") + "/" +
                     String(d.getMonth() + 1).padStart(2, "0") + "/" +
                     d.getFullYear();
-    return {dayName, hourStr, dateStr, dateObj: d};
+    return {dayKey, dayLabel, hourStr, dateStr, dateObj: d};
 }
 
 /**
- * Verifica a capacidade disponível de um horário específico (dateMs)
+ * Checks available capacity for a specific slot timestamp (dateMs)
  * @param {Number} dateMs
  */
 export async function getSlotAvailableCapacity(dateMs) {
     await Connection.open();
-    const {dayName, hourStr} = parseSlotFromDateMs(dateMs);
-    if (!dayName || !SERVICE_HOURS.includes(hourStr)) {
+    const {dayKey, hourStr} = parseSlotFromDateMs(dateMs);
+    if (!dayKey || !SERVICE_HOURS.includes(hourStr)) {
         return 0;
     }
 
     const schedule = await getTimeTable();
-    const configuredCapacity = Number(schedule?.[dayName]?.[hourStr] ?? 0);
+    const configuredCapacity = Number(schedule?.[dayKey]?.[hourStr] ?? 0);
     if (configuredCapacity <= 0) {
         return 0;
     }
@@ -121,12 +124,7 @@ export async function getSlotAvailableCapacity(dateMs) {
 }
 
 /**
- * Realiza um agendamento seguindo os 5 passos da Seção 2 do PDF:
- * 1. Verifica disponibilidade novamente no momento da confirmação (e se não está no passado)
- * 2. Cadastra ou identifica o cliente
- * 3. Registra o agendamento associado ao cliente
- * 4. Atualiza (reduz) a capacidade disponível do horário
- * 5. Retorna resultado para informar ao cliente
+ * Books an appointment following all 5 steps from PDF Section 2
  * @param {String} name
  * @param {String|Number} cpf
  * @param {Number} dateMs
@@ -159,7 +157,7 @@ export async function bookAppointment(name, cpf, dateMs) {
 }
 
 /**
- * Lista todos os agendamentos com Data, Horário, Nome do Cliente e CPF (/listaPetAgenda)
+ * Lists all appointments formatted for the admin schedule page
  */
 export async function getAllAppointments() {
     await Connection.open();
