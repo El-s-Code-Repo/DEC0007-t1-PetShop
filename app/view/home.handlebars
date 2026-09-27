@@ -1,4 +1,119 @@
 <section class="card">
     <h1>{{pageTitle}}</h1>
-    <p class="subtitle">Bem-vindo ao sistema de agendamento de Banho e Tosa do Pet Shop.</p>
+    <p class="subtitle">
+        Consulte os horários disponíveis na agenda semanal abaixo. Clique diretamente em um horário disponível na tabela ou selecione-o no formulário para agendar o atendimento do seu pet.
+    </p>
+
+    {{#if successMessage}}
+        <div class="alert alert-success">{{successMessage}}</div>
+    {{/if}}
+
+    {{#if errorMessage}}
+        <div class="alert alert-error">{{errorMessage}}</div>
+    {{/if}}
+
+    <h2>Calendário Semanal de Disponibilidade</h2>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Horário</th>
+                    {{#each weekDays}}
+                        <th>
+                            <div>{{this.label}}</div>
+                            <small class="date-badge">{{this.shortDate}}</small>
+                        </th>
+                    {{/each}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#each rows}}
+                    <tr>
+                        <td><strong>{{this.hour}}</strong></td>
+                        {{#each this.cells}}
+                            {{#if this.isAvailable}}
+                                <td class="slot-available">
+                                    <button
+                                        type="button"
+                                        class="slot-select-btn"
+                                        data-datems="{{this.dateMs}}"
+                                        title="Clique para selecionar {{this.dayLabel}} ({{this.fullDate}}) às {{this.hour}}"
+                                    >
+                                        <span class="slot-count">{{this.remaining}}</span>
+                                        <span class="slot-label">vaga(s)</span>
+                                    </button>
+                                </td>
+                            {{else}}
+                                <td class="slot-unavailable" title="Horário indisponível">—</td>
+                            {{/if}}
+                        {{/each}}
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
 </section>
+
+<section class="card" id="booking-section">
+    <h2>Realizar Agendamento</h2>
+    {{#if hasAvailableSlots}}
+        <form action="/appointments" method="POST" id="booking-form">
+            <div class="form-group">
+                <label for="dateMs">Horário Disponível:</label>
+                <select name="dateMs" id="dateMs" class="form-control" required>
+                    <option value="" disabled selected>Selecione um dia e horário...</option>
+                    {{#each availableOptions}}
+                        <option value="{{this.dateMs}}">{{this.label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="clientName">Nome Completo:</label>
+                <input
+                    type="text"
+                    id="clientName"
+                    name="name"
+                    class="form-control"
+                    placeholder="Ex.: João da Silva"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="clientCPF">CPF:</label>
+                <input
+                    type="text"
+                    id="clientCPF"
+                    name="cpf"
+                    class="form-control"
+                    placeholder="Ex.: 123.456.789-00"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn">Confirmar Agendamento</button>
+        </form>
+    {{else}}
+        <p class="subtitle">Não há horários disponíveis para agendamento nesta semana.</p>
+    {{/if}}
+</section>
+
+<script>
+    document.querySelectorAll(".slot-select-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const dateMs = btn.getAttribute("data-datems");
+            const select = document.getElementById("dateMs");
+            if (select) {
+                select.value = dateMs;
+                document.querySelectorAll(".slot-select-btn").forEach((b) => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                document.getElementById("clientName")?.focus();
+            }
+        });
+    });
+
+    if (window.history.replaceState && (window.location.search.includes("success=") || window.location.search.includes("error="))) {
+        window.history.replaceState(null, "", window.location.pathname);
+    }
+</script>

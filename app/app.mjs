@@ -2,6 +2,7 @@ import express from "express";
 import {engine} from "express-handlebars";
 import {Connection} from "./model/connector.mjs";
 import {renderScheduleConfig, handleScheduleConfigUpdate} from "./controller/adminController.mjs";
+import {renderClientHome} from "./controller/clientController.mjs";
 
 let app = express();
 
@@ -21,11 +22,7 @@ app.set("views", "./app/view");
 
 const PORT = 3000;
 
-app.get("/", async function (req, res) {
-    res.render("home", {
-        pageTitle: "Agendamento de Banho e Tosa"
-    });
-});
+app.get("/", renderClientHome);
 
 app.get("/ajustaPetAgenda", renderScheduleConfig);
 app.post("/ajustaPetAgenda", handleScheduleConfigUpdate);
