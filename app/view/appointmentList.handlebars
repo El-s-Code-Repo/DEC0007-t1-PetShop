@@ -1,0 +1,35 @@
+<section class="card">
+    <h1>{{pageTitle}}</h1>
+    <p class="subtitle">
+        Consulte abaixo todos os agendamentos de banho e tosa realizados pelos clientes.
+    </p>
+
+    {{#if hasAppointments}}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Horário</th>
+                        <th>Cliente</th>
+                        <th>CPF</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each appointments}}
+                        <tr>
+                            <td>{{this.date}}</td>
+                            <td><strong>{{this.hour}}</strong></td>
+                            <td>{{this.clientName}}</td>
+                            <td>{{this.clientCPF}}</td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    {{else}}
+        <p class="subtitle" style="margin-top: 1rem;">
+            Nenhum agendamento foi realizado até o momento.
+        </p>
+    {{/if}}
+</section>

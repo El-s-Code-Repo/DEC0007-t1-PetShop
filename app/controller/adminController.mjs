@@ -1,5 +1,5 @@
 import {DAYS_OF_WEEK, SERVICE_HOURS} from "../model/models.mjs";
-import {getTimeTable, updateTimeTable} from "../model/handlers.mjs";
+import {getTimeTable, updateTimeTable, getAllAppointments} from "../model/handlers.mjs";
 
 /**
  * Builds the weekly schedule rows for the Handlebars template
@@ -14,6 +14,29 @@ function buildScheduleRows(schedule) {
             capacity: schedule?.[dayObj.key]?.[hour] ?? 0
         }))
     }));
+}
+
+/**
+ * GET /listaPetAgenda
+ * Renders the list of booked appointments for the Pet Shop administration
+ */
+export async function renderAppointmentList(req, res) {
+    try {
+        const appointments = await getAllAppointments();
+
+        if (req.headers.accept?.includes("application/json") && req.query.format === "json") {
+            return res.status(200).json({appointments});
+        }
+
+        res.render("appointmentList", {
+            pageTitle: "Agenda de Atendimentos",
+            appointments,
+            hasAppointments: appointments.length > 0
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Erro ao carregar a lista de agendamentos.");
+    }
 }
 
 /**

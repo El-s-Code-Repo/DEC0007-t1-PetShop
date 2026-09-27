@@ -1,7 +1,11 @@
 import express from "express";
 import {engine} from "express-handlebars";
 import {Connection} from "./model/connector.mjs";
-import {renderScheduleConfig, handleScheduleConfigUpdate} from "./controller/adminController.mjs";
+import {
+    renderAppointmentList,
+    renderScheduleConfig,
+    handleScheduleConfigUpdate
+} from "./controller/adminController.mjs";
 import {renderClientHome, handleClientBooking} from "./controller/clientController.mjs";
 
 let app = express();
@@ -24,6 +28,8 @@ const PORT = 3000;
 
 app.get("/", renderClientHome);
 app.post("/", handleClientBooking);
+
+app.get("/listaPetAgenda", renderAppointmentList);
 
 app.get("/ajustaPetAgenda", renderScheduleConfig);
 app.post("/ajustaPetAgenda", handleScheduleConfigUpdate);
