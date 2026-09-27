@@ -54,10 +54,49 @@ must be able to:
 <li>View Available time slots</li>
 </ol>
 
+<h2> PROJECT STRUCTURE (MVC) </h2>
 
+```
+app/
+├── controller/   # Request handlers for client and admin routes
+├── model/        # MongoDB connection, data models, and business logic
+├── view/         # Handlebars templates, layouts, and static CSS assets
+└── app.mjs       # Express application entry point</code></pre>
+```
 
-Installed packages
+<h2> HOW TO RUN </h2>
+
+<h3> Option 1: Using Docker Compose (Recommended) </h3>
+
+```
+docker compose up --build</code></pre>
+```
+
+<h3> Option 2: Local Development (Node.js + Docker MongoDB) </h3>
+1. Start MongoDB container
+
+```
+docker compose up -d db
+```
+<h3></h3>
+2. Install dependencies and start development server
+
+```
+npm ci
+npm run dev</code></pre>
+```
+
+<h3> Available Routes </h3>
+<ul>
+<li><b>Client Home &amp; Booking:</b> <code>http://localhost:3000/</code></li>
+<li><b>Admin Appointment List:</b> <code>http://localhost:3000/listaPetAgenda</code></li>
+<li><b>Admin Schedule Configuration:</b> <code>http://localhost:3000/ajustaPetAgenda</code></li>
+</ul>
+
+<h3> Installed packages </h3>
+
 ```
 - Express
+- Express-Handlebars / Handlebars
 - Handlebars
 ```

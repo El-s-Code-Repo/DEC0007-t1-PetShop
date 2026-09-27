@@ -1,12 +1,7 @@
-FROM ubuntu:latest
-# Use a lightweight, official Node image
-FROM node:20-alpine AS base
+# Use a lightweight, official Node 22 LTS image (required by express-handlebars >= 22.22.2)
+FROM node:22-alpine AS base
 
-
-#You should probably replace this
-LABEL authors="Mess"
-
-
+LABEL authors="Mess, Lucas"
 
 # Set the working directory
 WORKDIR /usr/src/app
