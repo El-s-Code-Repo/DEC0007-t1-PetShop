@@ -4,29 +4,27 @@
 import {MongoClient} from "mongodb";
 
 export class Connection {
+    /** @type {import("mongodb").Collection<any>} */
+    static clients;
+
+    /** @type {import("mongodb").Collection<any>} */
+    static appointments;
+
+    /** @type {import("mongodb").Collection<any>} */
+    static timetable;
 
     static async open() {
-        if (this.mongoclient) return this.mongoclient
-        this.mongoclient = await MongoClient.connect(this.url)
-        this.db = await this.mongoclient.db("PetShop")
-        this.clients = await this.db.collection('clients')
-        this.appointments = await this.db.collection('appointments')
-        return this.db
+        if (this.mongoclient) return this.db;
+        this.mongoclient = await MongoClient.connect(this.url);
+        this.db = await this.mongoclient.db("PetShop");
+        this.clients = await this.db.collection('clients');
+        this.appointments = await this.db.collection('appointments');
+        this.timetable = await this.db.collection('timetable');
+        return this.db;
     }
 
 }
-//var client = new MongoClient("mongodb://127.0.0.1:50000");
-//   await client.connect();
-//   db = await client.db("AGENDA");
-//   alunos = await db.collection("alunos");
-Connection.db = null
-Connection.url = 'mongodb://127.0.0.1:27017/'
-// Connection.options = {
-//     bufferMaxEntries:   0,
-//     reconnectTries:     5000,
-//     useNewUrlParser:    true,
-//     useUnifiedTopology: true,
-// }
 
-
-// if this breaks use https://stackoverflow.com/a/62169471
+Connection.mongoclient = null;
+Connection.db = null;
+Connection.url = process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/';
