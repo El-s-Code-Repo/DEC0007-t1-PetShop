@@ -1,27 +1,42 @@
-import express from "express"
+import express from "express";
 import {engine} from "express-handlebars";
+import {Connection} from "./model/connector.mjs";
 
-let app = express()
+let app = express();
 
-app.use(express.static("./static"))
-app.engine("handlebars", engine());
+app.use(express.static("./app/view/static"));
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
+app.engine("handlebars", engine({
+    defaultLayout: "main",
+    layoutsDir: "./app/view/layouts",
+    helpers: {
+        eq: (a, b) => a === b
+    }
+}));
 app.set("view engine", "handlebars");
-app.set("views", "./views");
+app.set("views", "./app/view");
 
-const PORT = 3000
+const PORT = 3000;
 
-app.get("/",function (req,res) {
-    res.status(200).json({
-        message:"Running A-OK",
-        page:"CLIENT: Homepage",
-    })
+app.get("/", async function (req, res) {
+    res.render("home", {
+        pageTitle: "Agendamento de Banho e Tosa"
+    });
+});
+
+async function startServer() {
+    try {
+        await Connection.open();
+        console.log("Connected to MongoDB (PetShop)");
+        app.listen(PORT, function () {
+            console.log("waiting for people... @ " + PORT);
+        });
+    } catch (err) {
+        console.error("Failed to connect to MongoDB:", err);
+        process.exit(1);
+    }
 }
-)
 
-
-
-
-app.listen(PORT, function (){
-    console.log("waiting for people... @ " + PORT)
-
-})
+startServer();
