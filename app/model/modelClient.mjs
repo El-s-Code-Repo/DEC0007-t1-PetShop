@@ -29,7 +29,6 @@ export class Client {
 
     async save() {
         try {
-            await Connection.open();
             let data = await Connection.clients.updateOne(
                 {cpf: this.cpf},
                 {$set: {name: this.name, cpf: this.cpf}},
@@ -62,7 +61,6 @@ export class Client {
      * @param {String|Number} cpf
      */
     static async getClientByCPF(cpf) {
-        await Connection.open();
         const normalizedCpf = String(cpf).trim();
         let clientData = await Connection.clients.findOne({cpf: normalizedCpf});
         if (clientData != null) {

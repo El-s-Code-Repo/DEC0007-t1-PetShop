@@ -7,10 +7,10 @@ Task* = (Optional / low priority)
 
 
 ## HTML
-- [X] Home page (`app/view/home.handlebars`)
+- [X] Home page (`../templates/home.handlebars`)
 - [ ] Login page (Admin)*
-- [X] Admin pages (`app/view/appointmentList.handlebars`, `app/view/scheduleConfig.handlebars`)
-- [X] pretty CSS* (`app/view/static/css/style.css`)
+- [X] Admin pages (`../templates/appointmentList.handlebars`, `../templates/scheduleConfig.handlebars`)
+- [X] pretty CSS* (`../static`)
 
 ## Request Handlers
 - Home
@@ -37,3 +37,4 @@ Task* = (Optional / low priority)
   - _id (Internal, auto assigned)
 - TimeTable
   - a week sized table that represents the availability during this week
+

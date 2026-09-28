@@ -1,6 +1,7 @@
 import {DAYS_OF_WEEK, SERVICE_HOURS} from "../model/modelTimeTable.mjs";
-import {getTimeTable, updateTimeTable} from "../model/handlerTimeTable.mjs";
-import {getAllAppointments} from "../model/handlerAppointment.mjs";
+
+import {TimeTable} from "../model/modelTimeTable.mjs";
+import {Appointment} from "../model/modelAppointment.mjs";
 
 /**
  * Builds the weekly schedule rows for the Handlebars template
@@ -23,7 +24,7 @@ function buildScheduleRows(schedule) {
  */
 export async function renderAppointmentList(req, res) {
     try {
-        const appointments = await getAllAppointments();
+        const appointments = await Appointment.getAllAppointments();
 
         if (req.headers.accept?.includes("application/json") && req.query.format === "json") {
             return res.status(200).json({appointments});
@@ -45,7 +46,7 @@ export async function renderAppointmentList(req, res) {
  */
 export async function renderScheduleConfig(req, res) {
     try {
-        const schedule = await getTimeTable();
+        const schedule = await TimeTable.getSchedule();
         res.render("scheduleConfig", {
             pageTitle: "Configurar Horários de Atendimento",
             days: DAYS_OF_WEEK,
@@ -85,7 +86,7 @@ export async function handleScheduleConfigUpdate(req, res) {
             }
         }
 
-        const updated = await updateTimeTable(newSchedule);
+        const updated = await TimeTable.updateTimeTable(newSchedule);
 
         if (req.is("application/json") || req.headers.accept?.includes("application/json")) {
             return res.status(200).json({
