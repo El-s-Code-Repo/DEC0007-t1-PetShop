@@ -15,19 +15,28 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - isolated
+
 
   # Database Service (Example using MongoDB)
   db:
     image: mongo:7.0
-    ports:
-      - "27017:27017"
+#    ports:
+#      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh db:27017/test --quiet
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - isolated
 
 volumes:
   mongo_data:
+
+networks:
+  isolated:
+    driver: bridge
